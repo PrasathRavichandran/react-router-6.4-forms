@@ -1,7 +1,23 @@
+import { useNavigate, useLoaderData, Form, redirect } from "react-router-dom";
+import { EditContactProps, updateSingleContact } from "../api/network";
+
+export async function action({ request, params }: any) {
+  const formData = await request.formData();
+
+  const updates = Object.fromEntries(formData) as unknown as EditContactProps;
+
+  await updateSingleContact(params.contactId, updates);
+
+  return redirect(`/contacts/${params.contactId}`);
+}
+
 export default function EditContact() {
+  const contact = useLoaderData() as EditContactProps;
+  const navigate = useNavigate();
+
   return (
-    <div>
-      <form>
+    <div className="p-20">
+      <Form method="post">
         {/* first last */}
         <div className="flex flex-row items-center">
           <div className="w-32">
@@ -13,12 +29,14 @@ export default function EditContact() {
             name="first"
             id="first"
             className="px-6 py-2 shadow rounded-lg border w-1/2"
+            defaultValue={contact.first}
           />
           <input
             placeholder="Last"
             name="last"
             id="last"
             className="px-6 py-2 shadow rounded-lg ml-4 border w-1/2"
+            defaultValue={contact.last}
           />
         </div>
 
@@ -32,6 +50,7 @@ export default function EditContact() {
             name="twitter"
             id="twitter"
             className="px-6 py-2 shadow rounded-lg border w-full"
+            defaultValue={contact.twitter}
           />
         </div>
 
@@ -45,6 +64,7 @@ export default function EditContact() {
             name="avatar"
             id="avatar"
             className="px-6 py-2 shadow rounded-lg border w-full"
+            defaultValue={contact.avatar}
           />
         </div>
 
@@ -57,6 +77,7 @@ export default function EditContact() {
             name="notes"
             id="notes"
             className="px-6 py-2 shadow rounded-lg border w-full"
+            defaultValue={contact.notes}
           />
         </div>
 
@@ -71,11 +92,14 @@ export default function EditContact() {
           <button
             type="button"
             className="px-4 py-2 bg-white shadow-md rounded-lg text-red-600 border ml-4"
+            onClick={() => {
+              navigate(-1);
+            }}
           >
             Cancel
           </button>
         </div>
-      </form>
+      </Form>
     </div>
   );
 }

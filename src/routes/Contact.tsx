@@ -1,31 +1,22 @@
-export interface ContactProps {
-  first: string;
-  last: string;
-  avatar: string;
-  twitter: string;
-  notes: string;
-  favorite: boolean;
-  id?: string;
+import { useLoaderData, Form, Outlet } from "react-router-dom";
+import { getSingleContact, EditContactProps } from "../api/network";
+
+export async function loader({ params }: any) {
+  return getSingleContact(params.contactId);
 }
 
-const contact: ContactProps = {
-  first: "Your",
-  last: "Name",
-  avatar: "https://placekitten.com/g/200/200",
-  twitter: "your_handle",
-  notes: "Some notes",
-  favorite: true,
-};
-
 export default function Contact() {
+  const contact = useLoaderData() as EditContactProps;
+
   return (
-    <div className="flex flex-row items-center">
-      <div>
+    <div className="flex flex-row items-center p-10">
+      <div className="w-1/6">
         <img
           key={contact.avatar}
           src={contact.avatar}
-          className={"rounded-2xl"}
+          className={"border shadow rounded-2xl"}
         />
+        
       </div>
 
       <div className="px-5">
@@ -49,16 +40,25 @@ export default function Contact() {
 
         {contact.notes && <p className="text-base">{contact.notes}</p>}
         <div className="flex flex-row mt-4">
-          <form>
+          <Form action="edit">
             <button className="px-4 py-2 bg-white shadow-md rounded-lg text-cyan-600 border">
               Edit
             </button>
-          </form>
-          <form className="ml-2">
-            <button className="px-4 py-2 bg-white shadow-md rounded-lg text-red-600 border">
+          </Form>
+          <Form
+            method="post"
+            action="destroy"
+            className="ml-2"
+            onSubmit={(event) => {
+              if (!confirm("Please confirm you want to delete this record.")) {
+                event.preventDefault();
+              }
+            }}
+          >
+            <button type="submit" className="px-4 py-2 bg-white shadow-md rounded-lg text-red-600 border">
               Delete
             </button>
-          </form>
+          </Form>
         </div>
       </div>
     </div>
